@@ -1,4 +1,46 @@
 /* Create table about the people and what they do here */
+
+
+CREATE TABLE twilight
+    ("id" INTEGER,
+    "full_name" TEXT,
+    "species" TEXT)
+;
+    
+CREATE TABLE relationships
+    ("character_id" INTEGER,
+    "partner_id" INTEGER)
+;
+
+CREATE TABLE coven
+    ("character_id" INTEGER, 
+    "name" TEXT)
+;
+    
+INSERT INTO twilight
+    ("id", "full_name", "species")
+VALUES
+     (1, 'Bella Swan', 'vampire'),
+    (2, 'Edward Cullen', 'vampire'),
+    (3, 'Jacob Black', 'werewolf'),
+    (4, 'Renesmee Cullen', 'hybrid'),
+    (5, 'Carlisle Cullen', 'vampire'),
+    (6, 'Charlie Swan', 'human'),
+    (7, 'Sam Uley','werewolf'),
+    (8, 'Leah Clearwater', 'werewolf'),
+    (9, 'Esme Cullen', 'vampire'),
+    (10, 'Sue Clearwater', 'human'),
+    (11, 'Harry Clearwater', 'human'),
+    (12, 'Alice Cullen', 'vampire'),
+    (13, 'Jasper Cullen', 'vampire'),
+    (14, 'Paul Lahote', 'werewolf'),
+    (15, 'Rachel Black', 'human')
+;
+
+INSERT INTO relationships
+    ("character_id", "partner_id")
+VALUES
+/* Create table about the people and what they do here */
 CREATE TABLE twilight
     ("id" INTEGER,
     "full_name" TEXT,
@@ -27,37 +69,52 @@ VALUES
     (7, 'Sam Uley','werewolf'),
     (8, 'Leah Clearwater', 'werewolf'),
     (9, 'Esme Cullen', 'vampire'),
-    (10, 'Sue Clearwater', 'human')
+    (10, 'Sue Clearwater', 'human'),
+    (11, 'Harry Clearwater', 'human'),
+    (12, 'Alice Cullen', 'vampire'),
+    (13, 'Jasper Cullen', 'vampire'),
+    (14, 'Paul Lahote', 'werewolf'),
+    (15, 'Rachel Black', 'human')
 ;
 
 INSERT INTO relationships
     ("character_id", "partner_id")
 VALUES
-(1, 2),
-(2, 1),
-(3, 4),
-(4, 3),
-(5, 9),
-(6, 10),
-(7, 11),
-(8, NULL),
-(9, 5),
-(10, 6)
+    (1, 2),
+    (2, 1),
+    (3, 4),
+    (4, 3),
+    (5, 9),
+    (6, 10),
+    (7, NULL),
+    (8, NULL),
+    (9, 5),
+    (10, 6),
+    (11, 10),
+    (12, 13),
+    (13, 12),
+    (14, 15),
+    (15, 14)
 ;
 
 INSERT INTO coven
     ("character_id", "name")
 VALUES
-(1, 'cullen'),
-(2, 'cullen'),
-(3, 'quiliette'),
-(4, 'cullen'),
-(5, 'cullen'),
-(6, NULL),
-(7, 'quiliette'),
-(8, 'quiliette'),
-(9, 'cullen'),
-(10, 'quiliette')
+    (1, 'cullen'),
+    (2, 'cullen'),
+    (3, 'quiliette'),
+    (4, 'cullen'),
+    (5, 'cullen'),
+    (6, NULL),
+    (7, 'quiliette'),
+    (8, 'quiliette'),
+    (9, 'cullen'),
+    (10, 'quiliette'),
+    (11, 'quiliette'),
+    (12, 'cullen'),
+    (13, 'cullen'),
+    (14, 'quiliette'),
+    (15, 'quiliette')
 ;
 
 SELECT a.full_name AS name, b.full_name AS partner
