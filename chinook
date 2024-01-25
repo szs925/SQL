@@ -1,0 +1,138 @@
+#In this SQL, I'm querying a dataset called chinook, which represents a digital media store and includes tables for artists, albums, media tracks, invoices, and customers.
+
+#1.Show Customers (their full names, customer ID, and country) who are not in the US.
+SELECT customerid, firstname, lastname, country
+FROM chinook.customers
+WHERE country<>'USA';
+
+#2. Show only the Customers from Brazil.
+SELECT customerid, firstname, lastname, country
+FROM chinook.customers
+WHERE country='Brazil';
+
+#3. Find the Invoices of customers who are from Brazil. The resulting table should show the customer's full name, Invoice ID, Date of the invoice, and billing country.
+SELECT customers.FirstName, customers.LastName, invoices.InvoiceId, invoices.InvoiceDate, invoices.BillingCountry
+FROM customers
+LEFT JOIN invoices ON customers.CustomerId=invoices.CustomerId
+WHERE country='Brazil'
+GROUP by invoices.invoiceid;
+
+#4. Show the Employees who are Sales Agents.
+SELECT * FROM chinook.Employees
+WHERE Title = "Sales Support Agent";
+
+#5. Find a unique/distinct list of billing countries from the Invoice table.
+SELECT DISTINCT billingcountry
+FROM invoices;
+
+#6. Provide a query that shows the invoices associated with each sales agent. The resulting table should include the Sales Agent's full name.
+SELECT emp.LastName, emp.Firstname, inv.InvoiceId
+FROM chinook.Employees emp 
+JOIN chinook.Customers cust ON cust.SupportRepId = emp.EmployeeId
+JOIN chinook.Invoices Inv ON Inv.CustomerId = cust.CustomerId;
+
+#7. Show the Invoice Total, Customer name, Country, and Sales Agent name for all invoices and customers.
+SELECT 
+invoices.total,
+customers.FirstName AS CustomerFirstName, 
+customers.LastName AS CustomerLastName, 
+invoices.billingcountry as Country, 
+employees.FirstName AS EmployeeFirstName, 
+employees.LastName AS EmployeeLastName
+FROM chinook.invoices
+    JOIN chinook.customers ON customers.CustomerId=invoices.CustomerId
+    JOIN chinook.employees ON employees.EmployeeId=customers.SupportRepId;
+
+#8. How many Invoices were there in 2009?
+SELECT count(invoiceid)
+FROM invoices
+WHERE invoicedate LIKE '2009%';
+
+#9. What are the total sales for 2009?
+SELECT sum(total)
+FROM invoices
+WHERE invoicedate LIKE '2009%';
+
+#10. Write a query that includes the purchased track name with each invoice line ID.
+SELECT tracks.name, invoice_items.InvoiceLineId
+FROM chinook.tracks
+JOIN invoice_items ON invoice_items.TrackId=tracks.TrackId
+GROUP BY invoice_items.InvoiceLineId;
+
+#11. Write a query that includes the purchased track name AND artist name with each invoice line ID.
+SELECT tracks.Name AS TrackName, artists.Name AS ArtistName, invoice_items.InvoiceLineId
+FROM invoice_items
+    JOIN tracks ON tracks.TrackId=invoice_items.TrackId
+    JOIN artists ON artists.ArtistId=albums.ArtistId
+    JOIN albums ON albums.AlbumId=tracks.AlbumId
+GROUP BY invoice_items.InvoiceLineId;
+
+#12. Provide a query that shows all the Tracks, and include the Album name, Media type, and Genre.
+SELECT tracks.Name AS TrackName,
+albums.Title AS AlbumTitle,
+media_types.Name AS MediaType,
+genres.Name AS Genre
+FROM tracks
+    JOIN albums ON albums.AlbumId=tracks.AlbumId
+    JOIN media_types ON media_types.MediaTypeId=tracks.MediaTypeId
+    JOIN genres ON genres.GenreId=tracks.GenreId;
+    
+#13. Show the total sales made by each sales agent.
+SELECT employees.firstname, employees.LastName, ROUND(sum(invoices.total),2) AS TotalSales
+FROM invoices
+    JOIN customers ON customers.CustomerId=invoices.CustomerId
+    JOIN employees ON employees.EmployeeId=customers.SupportRepId
+GROUP BY employees.EmployeeId;
+
+#14. Which sales agent made the most dollars in sales in 2009?
+SELECT employees.firstname, employees.LastName, ROUND(sum(invoices.total),2) AS TotalSales
+FROM invoices
+    JOIN customers ON customers.CustomerId=invoices.CustomerId
+    JOIN employees ON employees.EmployeeId=customers.SupportRepId
+WHERE invoices.InvoiceDate LIKE '2009%'
+GROUP BY employees.EmployeeId
+ORDER BY sum(invoices.total) desc
+LIMIT 1;
+
+#15. List the top 5 countries with the highest total sales.
+SELECT BillingCountry AS Country
+FROM invoices
+GROUP BY billingcountry
+ORDER BY sum(total)
+LIMIT 5;
+
+#16. Find the average invoice total for each billing country.
+SELECT BillingCountry AS Country, AVG(total)
+FROM invoices
+GROUP BY billingcountry;
+
+#17. Find the most popular tracks based on the total sales.
+SELECT tracks.name, sum(invoice_items.Quantity*invoice_items.UnitPrice) AS TotalSales
+FROM tracks
+    JOIN invoice_items ON invoice_items.TrackId=tracks.TrackId
+GROUP BY tracks.name, tracks.trackid
+ORDER BY TotalSales desc
+LIMIT 10;
+
+#18. Determine the lifetime value of each customer, considering their total purchases over time.
+SELECT customers.CustomerId,customers.FirstName, customers.LastName, customers.Country, SUM(invoices.Total) AS LifetimeValue
+FROM customers
+JOIN invoices ON invoices.CustomerId = customers.CustomerId
+GROUP BY customers.CustomerId, customers.FirstName, customers.LastName, customers.Country
+ORDER BY LifetimeValue DESC;
+  
+#19. Show Top 10 customers with highest number of purchases.
+SELECT customers.CustomerId, customers.FirstName, customers.LastName, customers.Country, COUNT(DISTINCT invoices.InvoiceId) AS PurchaseCount
+FROM customers
+JOIN invoices ON invoices.CustomerId = customers.CustomerId
+GROUP BY customers.CustomerId, customers.FirstName, customers.LastName, customers.Country
+ORDER BY PurchaseCount DESC;
+
+#20. Determine the most purchased genre based on the number of tracks sold
+SELECT genres.Name AS Genre, COUNT(DISTINCT tracks.TrackId) AS TracksSold
+FROM genres
+JOIN tracks ON tracks.GenreId = genres.GenreId
+JOIN invoice_items ON invoice_items.TrackId = tracks.TrackId
+GROUP BY genres.GenreId, genres.Name
+ORDER BY TracksSold DESC
+LIMIT 1;
